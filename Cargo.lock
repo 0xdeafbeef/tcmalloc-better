@@ -439,6 +439,7 @@ name = "tcmalloc-better"
 version = "0.1.19"
 dependencies = [
  "document-features",
+ "libc",
  "libtcmalloc-sys",
 ]
 

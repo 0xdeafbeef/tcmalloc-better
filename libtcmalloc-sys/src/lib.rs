@@ -6,6 +6,14 @@
 //! ## Feature flags
 #![doc = document_features::document_features!()]
 
+#[cfg(all(
+    feature = "unprefixed_malloc_on_supported_platforms",
+    not(unprefixed_glibc_linux)
+))]
+compile_error!(
+    "feature `unprefixed_malloc_on_supported_platforms` is only supported on glibc Linux"
+);
+
 #[cfg(feature = "extension")]
 #[cfg_attr(docsrs, doc(cfg(feature = "extension")))]
 mod extension;
@@ -64,6 +72,14 @@ unsafe extern "C" {
         alignment: libc::size_t,
         old_size: *mut libc::size_t,
     ) -> *mut core::ffi::c_void;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn malloc(size: libc::size_t) -> *mut core::ffi::c_void;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn free(ptr: *mut core::ffi::c_void);
 }
 
 #[cfg(test)]

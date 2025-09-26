@@ -282,7 +282,29 @@ fn compile(src_dir: impl AsRef<Path>) {
     cc.cpp(true);
     cc.std("c++17");
     cc.define("NOMINMAX", None);
-    cc.define("TCMALLOC_INTERNAL_METHODS_ONLY", None);
+    let want_unprefixed =
+        env::var_os("CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS").is_some();
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+    let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default();
+    let is_glibc_linux = target_os == "linux" && target_env == "gnu";
+
+    if want_unprefixed && !is_glibc_linux {
+        println!(
+            "cargo:warning=unprefixed malloc requested but target is not glibc Linux (target_os={target_os}, target_env={target_env})"
+        );
+        panic!(
+            "`unprefixed_malloc_on_supported_platforms` requires glibc Linux"
+        );
+    }
+
+    let export_unprefixed = want_unprefixed && is_glibc_linux;
+
+    if export_unprefixed {
+        println!("cargo:rustc-cfg=unprefixed_glibc_linux");
+    } else {
+        println!("cargo:rustc-cfg=prefixed");
+        cc.define("TCMALLOC_INTERNAL_METHODS_ONLY", None);
+    }
     let page_size = PageSize::from_env().unwrap();
     cc.define(page_size.to_define(), None);
     if env::var_os("CARGO_FEATURE_DEPRECATED_PERTHREAD").is_some() {
@@ -522,6 +544,7 @@ fn patch_deps() -> PathBuf {
 }
 
 fn main() {
+    println!("cargo::rustc-check-cfg=cfg(unprefixed_glibc_linux)");
     let out_dir = patch_deps();
     compile(out_dir);
 }
