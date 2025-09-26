@@ -32,6 +32,11 @@
 #[cfg_attr(docsrs, doc(cfg(feature = "extension")))]
 mod extension;
 
+#[cfg(all(feature = "extension", feature = "std"))]
+pub use extension::{
+    AllocatorMetrics, AllocatorMetricsError, MetricsRawError, fetch_allocator_metrics, metrics_raw,
+};
+
 use core::alloc::{GlobalAlloc, Layout};
 
 /// A memory allocator that can be registered as the standard library’s default

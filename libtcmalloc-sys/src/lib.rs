@@ -65,6 +65,19 @@ unsafe extern "C" {
         old_size: *mut libc::size_t,
     ) -> *mut core::ffi::c_void;
 
+    #[cfg(feature = "extension")]
+    pub fn BridgeGetNumericProperty(
+        name: *const libc::c_char,
+        len: libc::size_t,
+        value: *mut libc::size_t,
+    ) -> bool;
+
+    #[cfg(feature = "extension")]
+    pub fn BridgeGetStats(data: *mut *const libc::c_char, len: *mut libc::size_t) -> bool;
+
+    #[cfg(feature = "extension")]
+    pub fn BridgeFreeStats(data: *const libc::c_char, len: libc::size_t);
+
     #[cfg(feature = "unprefixed_malloc_on_supported_platforms")]
     pub fn malloc(size: libc::size_t) -> *mut core::ffi::c_void;
 
