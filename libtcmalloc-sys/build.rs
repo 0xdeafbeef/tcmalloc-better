@@ -282,7 +282,19 @@ fn compile(src_dir: impl AsRef<Path>) {
     cc.cpp(true);
     cc.std("c++17");
     cc.define("NOMINMAX", None);
-    cc.define("TCMALLOC_INTERNAL_METHODS_ONLY", None);
+    let unprefixed =
+        env::var_os("CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS").is_some();
+    if unprefixed {
+        let target = env::var("TARGET").expect("TARGET was not set");
+        let supported = target.contains("linux") && target.contains("gnu");
+        assert!(
+            supported,
+            "`unprefixed_malloc_on_supported_platforms` requires a glibc Linux target (got {target})"
+        );
+    } else {
+        cc.define("TCMALLOC_INTERNAL_METHODS_ONLY", None);
+        println!("cargo:rustc-cfg=prefixed");
+    }
     let page_size = PageSize::from_env().unwrap();
     cc.define(page_size.to_define(), None);
     if env::var_os("CARGO_FEATURE_DEPRECATED_PERTHREAD").is_some() {

@@ -64,6 +64,12 @@ unsafe extern "C" {
         alignment: libc::size_t,
         old_size: *mut libc::size_t,
     ) -> *mut core::ffi::c_void;
+
+    #[cfg(feature = "unprefixed_malloc_on_supported_platforms")]
+    pub fn malloc(size: libc::size_t) -> *mut core::ffi::c_void;
+
+    #[cfg(feature = "unprefixed_malloc_on_supported_platforms")]
+    pub fn free(ptr: *mut core::ffi::c_void);
 }
 
 #[cfg(test)]

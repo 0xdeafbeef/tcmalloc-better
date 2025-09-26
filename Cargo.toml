@@ -49,6 +49,8 @@ deprecated_perthread = ["libtcmalloc-sys/deprecated_perthread"]
 ## Use legacy locking backend (which is not TLB-aware)
 ## See [TCMalloc docs](https://github.com/google/tcmalloc/blob/master/docs/design.md#tcmalloc-backend)
 legacy_locking = ["libtcmalloc-sys/legacy_locking"]
+## Export unprefixed libc allocator symbols on supported platforms.
+unprefixed_malloc_on_supported_platforms = ["libtcmalloc-sys/unprefixed_malloc_on_supported_platforms"]
 ## Use TCMalloc's realloc instead of default [`GlobalAlloc::realloc`].
 ## Caveats: All memory deallocations will use the slower unsized `TCMallocInternalDeleteAligned`
 ## (which accesses slow page map).
@@ -85,3 +87,6 @@ features = ["std", "extension", "8k_pages"]
 # enable features in the documentation
 rustdoc-args = ["--cfg", "docsrs"]
 rustc-args = ["--cfg", "docsrs"]
+
+[dev-dependencies]
+libc = "0.2"

@@ -58,6 +58,8 @@ numa_aware = []
 deprecated_perthread = []
 ## Use legacy locking. See [TCMalloc docs](https://github.com/google/tcmalloc/blob/master/docs/design.md#tcmalloc-backend)
 legacy_locking = []
+## Export unprefixed libc symbols (malloc/free/realloc) on supported platforms.
+unprefixed_malloc_on_supported_platforms = []
 
 #! ### Logical Page Sizes (These features are mutually exclusive).
 #! Larger page size leads to greater performance in expense to increased fragmentation.
