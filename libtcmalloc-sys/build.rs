@@ -275,10 +275,14 @@ fn compile(src_dir: impl AsRef<Path>) {
         cc.file(join_src_dir("c_src/malloc_extension_bridge.cc"));
     }
     cc.includes(
-        ["c_src/abseil-cpp", "c_src/tcmalloc"]
+        ["c_bridge", "c_src/abseil-cpp", "c_src/tcmalloc"]
             .into_iter()
             .map(join_src_dir),
     );
+    let compat_header = join_src_dir("c_src/compat/glibc_errno_compat.h");
+    let compat_header = compat_header.to_string_lossy().into_owned();
+    cc.flag("-include");
+    cc.flag(&compat_header);
     cc.cpp(true);
     cc.std("c++17");
     cc.define("NOMINMAX", None);
@@ -292,9 +296,7 @@ fn compile(src_dir: impl AsRef<Path>) {
         println!(
             "cargo:warning=unprefixed malloc requested but target is not glibc Linux (target_os={target_os}, target_env={target_env})"
         );
-        panic!(
-            "`unprefixed_malloc_on_supported_platforms` requires glibc Linux"
-        );
+        panic!("`unprefixed_malloc_on_supported_platforms` requires glibc Linux");
     }
 
     let export_unprefixed = want_unprefixed && is_glibc_linux;
@@ -303,7 +305,9 @@ fn compile(src_dir: impl AsRef<Path>) {
         println!("cargo:rustc-cfg=unprefixed_glibc_linux");
     } else {
         println!("cargo:rustc-cfg=prefixed");
-        cc.define("TCMALLOC_INTERNAL_METHODS_ONLY", None);
+    }
+    if env::var_os("CARGO_FEATURE_OVERRIDE_CPP_OPERATORS").is_some() {
+        cc.define("BRIDGE_OVERRIDE_CPP_OPERATORS", None);
     }
     let page_size = PageSize::from_env().unwrap();
     cc.define(page_size.to_define(), None);

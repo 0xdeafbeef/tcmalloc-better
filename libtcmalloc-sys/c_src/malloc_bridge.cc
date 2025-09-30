@@ -1,3 +1,4 @@
+#include "libc_override.h"
 #include "tcmalloc/tcmalloc.cc"
 
 extern "C" {

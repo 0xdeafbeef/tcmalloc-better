@@ -75,7 +75,27 @@ unsafe extern "C" {
 
     #[cfg(unprefixed_glibc_linux)]
     #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn calloc(count: libc::size_t, size: libc::size_t) -> *mut core::ffi::c_void;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn posix_memalign(
+        ptr: *mut *mut core::ffi::c_void,
+        alignment: libc::size_t,
+        size: libc::size_t,
+    ) -> libc::c_int;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn aligned_alloc(alignment: libc::size_t, size: libc::size_t) -> *mut core::ffi::c_void;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
     pub fn malloc(size: libc::size_t) -> *mut core::ffi::c_void;
+
+    #[cfg(unprefixed_glibc_linux)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
+    pub fn realloc(ptr: *mut core::ffi::c_void, size: libc::size_t) -> *mut core::ffi::c_void;
 
     #[cfg(unprefixed_glibc_linux)]
     #[cfg_attr(docsrs, doc(cfg(feature = "unprefixed_malloc_on_supported_platforms")))]
